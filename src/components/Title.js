@@ -1,11 +1,7 @@
-import React from 'react';
+import React from "react";
 
-const Title = ({title}) => {
-  return (
-    <header className="header">
-      {title}
-    </header>
-  )
-}
+const Title = ({ title }) => {
+  return <header className="header">{title}</header>;
+};
 
 export default Title;
