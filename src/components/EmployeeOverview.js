@@ -9,8 +9,6 @@ const EmployeeOverview = ({ match }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  console.log(isError);
-
   useEffect(() => {
     getSubordinates(employeeName)
       .then(data => {
