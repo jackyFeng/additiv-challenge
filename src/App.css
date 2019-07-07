@@ -16,6 +16,39 @@
   margin-bottom: 5vh;
 }
 
+/* 
+* Employee Explorer
+*/
+   
+@media (max-width: 768px){
+  .explorer-form {
+    flex-direction: column;
+  }
+
+  .explorer-form__item {
+    margin-bottom: 0.5em;
+  }
+}
+
+.explorer-form {
+  display: flex;
+}
+
+.explorer-form__item {
+  flex: 1;
+  font-size: calc(10px + 1vmin);
+  border: none;
+  padding: 0.5em;
+}
+
+.explorer-form__button {
+  background-color: #00BFFF;
+}
+
+/* 
+* Employee Overview
+*/
+
 .header, .employee-overview {
   font-size: calc(10px + 1vmin);
 }

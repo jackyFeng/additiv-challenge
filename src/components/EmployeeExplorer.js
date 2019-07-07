@@ -17,9 +17,9 @@ const EmployeeExplorer = ({history}) => {
 	return (
 		<div className="container">
 			<Title title='Employee Explorer' />
-			<form className="form-search" onSubmit={handleSubmit}>
-				<input type="text" value={searchValue} onChange={handleChange} />
-				<input type="submit" value="Search" />
+			<form className="explorer-form" onSubmit={handleSubmit}>
+				<input className="explorer-form__item explorer-form__input" type="text" value={searchValue} onChange={handleChange} />
+				<input className="explorer-form__item explorer-form__button" type="submit" value="SEARCH" />
 			</form>
 		</div>
 	)
