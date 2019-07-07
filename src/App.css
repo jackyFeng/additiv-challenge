@@ -19,8 +19,8 @@
 /* 
 * Employee Explorer
 */
-   
-@media (max-width: 768px){
+
+@media (max-width: 768px) {
   .explorer-form {
     flex-direction: column;
   }
@@ -42,14 +42,15 @@
 }
 
 .explorer-form__button {
-  background-color: #00BFFF;
+  background-color: #00bfff;
 }
 
 /* 
 * Employee Overview
 */
 
-.header, .employee-overview {
+.header,
+.employee-overview {
   font-size: calc(10px + 1vmin);
 }
 
@@ -60,5 +61,3 @@
 .employee-overview__subordinates > div {
   text-align: start;
 }
-
-
