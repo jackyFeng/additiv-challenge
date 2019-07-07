@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Title from "./Title";
 
 const EmployeeExplorer = ({ history }) => {
-  console.log(history);
   const [searchValue, setSearchValue] = useState("");
 
   function handleChange(event) {
