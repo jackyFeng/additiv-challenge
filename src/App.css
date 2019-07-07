@@ -13,5 +13,19 @@
 }
 
 .header {
-  font-size: calc(10px + 2vmin);
+  margin-bottom: 5vh;
 }
+
+.header, .employee-overview {
+  font-size: calc(10px + 1vmin);
+}
+
+.employee-overview__title {
+  margin-bottom: 2vh;
+}
+
+.employee-overview__subordinates > div {
+  text-align: start;
+}
+
+

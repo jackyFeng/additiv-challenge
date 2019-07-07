@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import Title from './Title';
+
 const EmployeeExplorer = ({history}) => {
 	const [searchValue, setSearchValue] = useState('');
 
@@ -9,18 +11,12 @@ const EmployeeExplorer = ({history}) => {
 
 	function handleSubmit(event) {
 		event.preventDefault();
-		history.push({
-			pathname: '/overview',
-			search: `${searchValue}`,
-			state: {employee: searchValue}
-		})
+		searchValue !== '' && history.push(`/overview/${searchValue}`);
   }
 
 	return (
 		<div className="container">
-			<header className="header">
-				<h5> Employee Explorer </h5>
-			</header>
+			<Title title='Employee Explorer' />
 			<form className="form-search" onSubmit={handleSubmit}>
 				<input type="text" value={searchValue} onChange={handleChange} />
 				<input type="submit" value="Search" />
