@@ -10,6 +10,7 @@ const EmployeeOverview = ({ match }) => {
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
+    // this async method could be implemented with web worker, but it is not necessary to release the UI
     async function getDirectandIndirectSubordinates(employeeName) {
       let indirectSubordiantes = [];
       let data = await getSubordinates(employeeName);
