@@ -1,4 +1,4 @@
-# additive-challenge
+# additiv-challenge
 
 This project is created with create-react-app, and using embeded webpack to build.
 
