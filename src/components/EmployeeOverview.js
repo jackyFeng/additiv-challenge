@@ -4,20 +4,31 @@ import Title from "./Title";
 import { getSubordinates } from "../api/employeeApi";
 
 const EmployeeOverview = ({ match }) => {
-  const employeeName = match.params.employeeName;
+  const { employeeName } = match.params;
   const [subordinates, setSubordinates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    getSubordinates(employeeName)
+    async function getDirectandIndirectSubordinates(employeeName) {
+      let indirectSubordiantes = [];
+      let data = await getSubordinates(employeeName);
+      const directSubordinates = retrieveSubordinates(data);
+      if (directSubordinates.length > 0) {
+        const data = await Promise.all(
+          directSubordinates.map(subordinate => getSubordinates(subordinate))
+        );
+        indirectSubordiantes = data.flatMap(eachData =>
+          retrieveSubordinates(eachData)
+        );
+      }
+      return new Set(directSubordinates.concat(indirectSubordiantes)); // use Set to remove duplicates
+    }
+
+    getDirectandIndirectSubordinates(employeeName)
       .then(data => {
         setIsLoading(false);
-        let [, directSubordinates] = data;
-        directSubordinates =
-          (directSubordinates && directSubordinates["direct-subordinates"]) ||
-          [];
-        setSubordinates(directSubordinates);
+        setSubordinates([...data]); // convert Set to array
       })
       .catch(err => {
         setIsLoading(false);
@@ -25,9 +36,16 @@ const EmployeeOverview = ({ match }) => {
       });
   }, [employeeName]); // tells Hooks stop running effect if it is the same employee
 
+  function retrieveSubordinates(data) {
+    let [, directSubordinates] = data;
+    return (
+      (directSubordinates && directSubordinates["direct-subordinates"]) || []
+    );
+  }
+
   function renderSubordinates() {
     if (isError) {
-      return <div>Error getting subordinates</div>;
+      return <div className="error-msg">Employee is not existed</div>;
     }
 
     if (isLoading) {
