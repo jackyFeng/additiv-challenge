@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Title from "./Title";
-import { getSubordinates } from "../api/employeeApi";
+import { getEmployeeDetails } from "../api/employeeApi";
 
 const EmployeeOverview = ({ match }) => {
   const { employeeName } = match.params;
@@ -11,22 +11,22 @@ const EmployeeOverview = ({ match }) => {
 
   useEffect(() => {
     // this async method could be implemented with web worker, but it is not necessary to release the UI
-    async function getDirectandIndirectSubordinates(employeeName) {
-      let indirectSubordiantes = [];
-      let data = await getSubordinates(employeeName);
+    /*async function getDirectAndIndirectSubordinates(employeeName) {
+      let indirectSubordinates = [];
+      let data = await getEmployeeDetails(employeeName);
       const directSubordinates = retrieveSubordinates(data);
       if (directSubordinates.length > 0) {
         const data = await Promise.all(
-          directSubordinates.map(subordinate => getSubordinates(subordinate))
+          directSubordinates.map(subordinate => getEmployeeDetails(subordinate))
         );
-        indirectSubordiantes = data.flatMap(eachData =>
+          indirectSubordinates = data.flatMap(eachData =>
           retrieveSubordinates(eachData)
         );
       }
-      return new Set(directSubordinates.concat(indirectSubordiantes)); // use Set to remove duplicates
+      return new Set(directSubordinates.concat(indirectSubordinates)); // use Set to remove duplicates
     }
 
-    getDirectandIndirectSubordinates(employeeName)
+    getDirectAndIndirectSubordinates(employeeName)
       .then(data => {
         setIsLoading(false);
         setSubordinates([...data]); // convert Set to array
@@ -34,7 +34,34 @@ const EmployeeOverview = ({ match }) => {
       .catch(err => {
         setIsLoading(false);
         setIsError(true);
-      });
+      });*/
+      function* getSubordinates(employeeNames) {
+          yield Promise.all(
+              employeeNames.map(employeeName => getEmployeeDetails(employeeName))
+          ).then(data => data.flatMap(eachData =>
+              retrieveSubordinates(eachData)
+          ));
+      }
+
+      function getAllSubordinates(employeeNames, allSubordinates = []) {
+          const subordinatesGen = getSubordinates(employeeNames);
+          let next = subordinatesGen.next();
+          next.value.then(subordinates => {
+              if (subordinates.length > 0) {
+                  getAllSubordinates(subordinates, allSubordinates.concat(subordinates));
+              } else {
+                  setIsLoading(false);
+                  setSubordinates(allSubordinates); // convert Set to array
+              }
+          })
+          .catch(err => {
+              setIsLoading(false);
+              setIsError(true);
+          });
+      }
+
+      getAllSubordinates([employeeName]);
+
   }, [employeeName]); // tells Hooks stop running effect if it is the same employee
 
   function retrieveSubordinates(data) {
