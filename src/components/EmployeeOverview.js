@@ -10,58 +10,35 @@ const EmployeeOverview = ({ match }) => {
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    // this async method could be implemented with web worker, but it is not necessary to release the UI
-    /*async function getDirectAndIndirectSubordinates(employeeName) {
-      let indirectSubordinates = [];
-      let data = await getEmployeeDetails(employeeName);
-      const directSubordinates = retrieveSubordinates(data);
-      if (directSubordinates.length > 0) {
-        const data = await Promise.all(
-          directSubordinates.map(subordinate => getEmployeeDetails(subordinate))
-        );
-          indirectSubordinates = data.flatMap(eachData =>
-          retrieveSubordinates(eachData)
-        );
-      }
-      return new Set(directSubordinates.concat(indirectSubordinates)); // use Set to remove duplicates
+    function* getSubordinates(employeeNames) {
+      yield Promise.all(
+        employeeNames.map(employeeName => getEmployeeDetails(employeeName))
+      ).then(data => data.flatMap(eachData => retrieveSubordinates(eachData)));
     }
 
-    getDirectAndIndirectSubordinates(employeeName)
-      .then(data => {
-        setIsLoading(false);
-        setSubordinates([...data]); // convert Set to array
-      })
-      .catch(err => {
-        setIsLoading(false);
-        setIsError(true);
-      });*/
-      function* getSubordinates(employeeNames) {
-          yield Promise.all(
-              employeeNames.map(employeeName => getEmployeeDetails(employeeName))
-          ).then(data => data.flatMap(eachData =>
-              retrieveSubordinates(eachData)
-          ));
-      }
+    function getAllSubordinates(employeeNames, allSubordinates = []) {
+      const subordinatesGen = getSubordinates(employeeNames);
+      const next = subordinatesGen.next();
+      next.value
+        .then(subordinates => {
+          if (subordinates.length > 0) {
+            getAllSubordinates(
+              subordinates,
+              allSubordinates.concat(subordinates)
+            );
+          } else {
+            setIsLoading(false);
+            const distinctSubordinates = new Set(allSubordinates);
+            setSubordinates([...distinctSubordinates]); // convert Set to array
+          }
+        })
+        .catch(err => {
+          setIsLoading(false);
+          setIsError(true);
+        });
+    }
 
-      function getAllSubordinates(employeeNames, allSubordinates = []) {
-          const subordinatesGen = getSubordinates(employeeNames);
-          let next = subordinatesGen.next();
-          next.value.then(subordinates => {
-              if (subordinates.length > 0) {
-                  getAllSubordinates(subordinates, allSubordinates.concat(subordinates));
-              } else {
-                  setIsLoading(false);
-                  setSubordinates(allSubordinates); // convert Set to array
-              }
-          })
-          .catch(err => {
-              setIsLoading(false);
-              setIsError(true);
-          });
-      }
-
-      getAllSubordinates([employeeName]);
-
+    getAllSubordinates([employeeName]);
   }, [employeeName]); // tells Hooks stop running effect if it is the same employee
 
   function retrieveSubordinates(data) {
@@ -77,7 +54,7 @@ const EmployeeOverview = ({ match }) => {
     }
 
     if (isLoading) {
-      return <div />;
+      return <div>Loading...</div>;
     } else {
       return !!subordinates.length ? (
         subordinates.map(subordinate => (
